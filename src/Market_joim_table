@@ -1,0 +1,149 @@
+create table products(
+                         id serial primary key ,
+                         name varchar(50),
+                         description text,
+                         price numeric,
+                         weight int
+);
+
+create table product_info(
+                             id serial primary key,
+                             expiration_date date,
+                             country varchar,
+                             colour varchar,
+                             product_id int references products(id)
+);
+
+
+insert into products(name, description, price, weight)
+VALUES ('Cheese', 'Cream cheese', 500, 200),
+       ('Milk', 'Almond Milk', 250, 500),
+       ('Yogurt', 'Strawberry yogurt', 50, 100),
+       ('Ice_cream', 'Chocolate ice_cream', 40, 100),
+       ('Bread', 'Ruddy bread', 50, 200),
+       ('Butter', 'Butter', 120, 400),
+       ('Sausage', 'Beef sausage', 180, 200);
+
+
+
+insert into product_info(expiration_date,country,colour,product_id)
+VALUES (date '1-11-2023', 'Bishkek', 'Yellow', 1),
+       (date '1-12-2023', 'Osh', 'White', 2),
+       (date '2-10-2023', 'Batken', 'Purple', 3),
+       (date '1-10-2023', 'Talas', 'White', 4),
+       (date '1-12-2023', 'Naryn', 'White', 5);
+
+
+
+
+
+
+
+create table customers(
+                          id serial primary key ,
+                          first_name varchar(50),
+                          last_name varchar(50),
+                          email varchar not null ,
+                          phone_number varchar
+);
+
+
+create table basket
+(
+    id          serial primary key,
+    basket_name varchar,
+    customer_id int references customers (id)
+);
+
+
+create table product_basket(
+    id serial primary key ,
+    basket_id int references basket(id),
+    product_id int references products(id)
+);
+
+
+insert into customers(first_name, last_name, email, phone_number)
+VALUES ('Mukhammet', 'Asantegin', 'mm@gmail.com', '0550123456'),
+       ('Rahim', 'Bazarbai uulu', 'r@gmail.com', '0777123456'),
+       ('Aijamal', 'Asangazieva', 'ai@gmail.com', '0500123654');
+
+
+insert into basket(basket_name, customer_id)
+VALUES ('Mukhammet basket', 1 ),
+       ('Rahim basket', 2),
+       ('Aijamal basket', 3);
+
+insert into product_basket(basket_id, product_id)
+values (1, 3),
+       (2, 4),
+       (3, 1);
+
+
+
+
+----------------------------------------
+select * from customers;
+select * from basket;
+select * from product_basket;
+select * from products;
+select * from product_info;
+----------------------------------------
+
+
+/* 1 */ select * from products;
+/* 2 */ select products.name, product_info.expiration_date from products right join  product_info
+                            on products.id = product_info.product_id;
+
+/* 3 */ select products.name, product_info.expiration_date from products left join  product_info
+                            on products.id = product_info.product_id;
+
+/* 4 */ select * from products join product_info pi on products.id = pi.product_id;
+
+/* 5 */ select products.name, product_info.country from products left join  product_info
+                             on products.id = product_info.product_id where country ilike 'B%';
+
+/* 6 */ select customers.first_name, basket.basket_name from customers full join basket
+                             on  customers.id = basket.customer_id order by first_name, basket_name asc;
+        select customers.first_name, basket.basket_name from customers full join basket
+                             on  customers.id = basket.customer_id order by first_name, basket_name desc ;
+
+/* 7 */ select customers.first_name, product_basket.product_id from customers full join product_basket
+                            on customers.id = product_basket.product_id ;
+
+/* 8 */ select customers.first_name, product_basket.product_id, products.name, products.price, products.weight from customers, product_basket, products
+                                    where customers.id = product_basket.product_id and product_basket.product_id = products.id;
+
+/* 9 */
+
+/* 10 */ select products.name, product_info.country from products join product_info
+                            on products.id = product_info.product_id where country='Bishkek';
+
+/* 11 */ select customers.first_name, product_basket.product_id, products.name, products.price, products.weight from customers, product_basket, products
+                  where  customers.id = product_basket.product_id and product_basket.product_id = products.id;
+
+/* 12 */ select * from products join product_info pi on products.id = pi.product_id
+                            where expiration_date between '12-12-2021' and '12-12-2023';
+
+/* 13 */ select * from products join product_info pi on products.id = pi.product_id
+         where expiration_date='1-11-2023';
+
+/* 14 */ select sum(price) from products ;
+
+/* 15 */ select customers.first_name, product_basket.product_id, products.name, product_info.colour from customers, product_basket, products,product_info
+                  where  customers.id = product_basket.product_id and product_basket.product_id = products.id and products.id = product_info.product_id;
+
+/* 16 */ select name,weight from products;
+
+/* 17 */ select customers.first_name, basket.basket_name from customers full join basket
+                            on  customers.id = basket.customer_id where email ilike '%com';
+
+/* 18 */ select products.name, products.description, product_basket.basket_id,basket.customer_id,
+                         customers.first_name,customers.phone_number from products, product_basket,basket,
+                         customers where products.id = product_basket.product_id and product_basket.basket_id = basket.id and basket.customer_id = customers.id;
+
+/* 19 */ select products.name, product_info.colour from products join product_info
+                            on products.id = product_info.product_id;
+         select colour, count(*) from product_info group by  colour;
+
+/* 20 */ 
